@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant Disease Predictor</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+    <div class="background-overlay"></div>
+    
+    <div class="glass-container">
+        <!-- Sidebar for SE Controls -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fa-solid fa-flask"></i> SE Testing</h2>
+                <p>Stress test the model using Software Engineering mutations.</p>
+            </div>
+            
+            <div class="mutation-controls">
+                <label class="mutation-option">
+                    <input type="radio" name="mutation" value="none" checked>
+                    <span class="btn-mutation"><i class="fa-solid fa-image"></i> Normal</span>
+                </label>
+                <label class="mutation-option">
+                    <input type="radio" name="mutation" value="flip">
+                    <span class="btn-mutation"><i class="fa-solid fa-arrows-left-right"></i> Flip</span>
+                </label>
+                <label class="mutation-option">
+                    <input type="radio" name="mutation" value="darken">
+                    <span class="btn-mutation"><i class="fa-solid fa-moon"></i> Darken (50%)</span>
+                </label>
+                <label class="mutation-option">
+                    <input type="radio" name="mutation" value="rotate">
+                    <span class="btn-mutation"><i class="fa-solid fa-rotate-right"></i> Rotate (25&deg;)</span>
+                </label>
+                
+                <h3 class="section-title">Boundary Value Analysis</h3>
+                <label class="mutation-option">
+                    <input type="radio" name="mutation" value="pitch_black">
+                    <span class="btn-mutation"><i class="fa-solid fa-circle-half-stroke"></i> Pitch Black</span>
+                </label>
+                <label class="mutation-option">
+                    <input type="radio" name="mutation" value="blinding_light">
+                    <span class="btn-mutation"><i class="fa-solid fa-sun"></i> Blinding Light</span>
+                </label>
+                <label class="mutation-option">
+                    <input type="radio" name="mutation" value="rotate_359">
+                    <span class="btn-mutation"><i class="fa-solid fa-sync"></i> Rotate 359&deg;</span>
+                </label>
+
+                <h3 class="section-title">Manual Customization</h3>
+                <div class="control-group">
+                    <label for="brightnessSlider">Brightness: <span id="brightnessVal">1.0</span></label>
+                    <input type="range" id="brightnessSlider" min="0.0" max="3.0" step="0.1" value="1.0">
+                </div>
+                
+                <div class="control-group">
+                    <label for="rotationSlider">Rotation (&deg;): <span id="rotationVal">0</span></label>
+                    <input type="range" id="rotationSlider" min="0" max="359" step="1" value="0">
+                </div>
+                
+                <div class="control-group checkbox-group">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="flipCheckbox">
+                        <span class="checkmark"></span>
+                        Horizontal Flip
+                    </label>
+                </div>
+            </div>
+
+            <div class="se-metrics-panel">
+                <h4>Expected Failure Rate</h4>
+                <div class="metric-value" id="failureRateDisplay">0.0%</div>
+                <p class="metric-subtext">Based on Module 4 stress testing.</p>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header>
+                <h1><i class="fa-solid fa-leaf"></i> PlantHealth AI</h1>
+                <p>Upload a leaf image to detect diseases instantly</p>
+            </header>
+
+            <div class="upload-area" id="uploadArea">
+                <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+                <p>Drag & Drop your image here</p>
+                <p class="sub-text">or</p>
+                <button class="btn" id="browseBtn">Browse Files</button>
+                <input type="file" id="fileInput" accept="image/*" hidden>
+            </div>
+
+            <div class="preview-area hidden" id="previewArea">
+                <div class="image-wrapper">
+                    <img id="imagePreview" src="" alt="Image Preview">
+                    <button class="btn-icon" id="removeBtn" title="Remove Image"><i class="fa-solid fa-times"></i></button>
+                </div>
+                <button class="btn btn-primary" id="predictBtn">Predict Disease <i class="fa-solid fa-wand-magic-sparkles"></i></button>
+            </div>
+
+            <div class="loading-area hidden" id="loadingArea">
+                <div class="spinner"></div>
+                <p>Applying mutations and analyzing...</p>
+            </div>
+
+            <div class="result-area hidden" id="resultArea">
+                <h2>Analysis Complete</h2>
+                <div class="result-card">
+                    <div class="result-icon">
+                        <i class="fa-solid fa-microscope"></i>
+                    </div>
+                    <div class="result-details">
+                        <p class="label">Detected Condition:</p>
+                        <h3 id="diseaseName">Apple___Apple Scab</h3>
+                        <div class="result-metric">Confidence: <span id="confidenceValue">-</span>%</div>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" id="confidenceFill" style="width: 0%;"></div>
+                        </div>
+                        <div class="result-metric" style="margin-top: 10px; font-size: 0.9rem; color: #aaa;">
+                            <i class="fa-solid fa-stopwatch"></i> Inference Speed: <span id="latencyValue">-</span> ms
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-outline" id="resetBtn">Analyze Another Image</button>
+            </div>
+
+            <!-- MODULE 5: Software Project Management -->
+            <div class="cocomo-section" style="margin-top: 3rem; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 2rem;">
+                <h2 style="font-size: 1.5rem; margin-bottom: 1rem; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+                    <i class="fa-solid fa-chart-line"></i> Software Project Management: COCOMO Model Estimate
+                </h2>
+                <p style="color: #ccc; margin-bottom: 1rem; font-size: 0.95rem;">Based on Module 5 of the SE Syllabus, cost and effort estimation for this project using the <strong>Basic COCOMO (Organic)</strong> model:</p>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                    <div style="background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+                        <div style="font-size: 0.85rem; color: var(--primary-color); text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Project Size</div>
+                        <div style="font-size: 1.8rem; font-weight: bold; margin-top: 0.5rem; color: white;">1.5 KLOC</div>
+                        <div style="font-size: 0.95rem; color: #f8f9fa; margin-top: 0.4rem; line-height: 1.4;">Lines of Code<br>(app + frontend + model)</div>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+                        <div style="font-size: 0.85rem; color: var(--warning-color); text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Estimated Effort</div>
+                        <div style="font-size: 1.8rem; font-weight: bold; margin-top: 0.5rem; color: white;">3.7 PM</div>
+                        <div style="font-size: 0.95rem; color: #f8f9fa; margin-top: 0.4rem; line-height: 1.4;">Person-Months<br>(E = 2.4 * 1.5^1.05)</div>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+                        <div style="font-size: 0.85rem; color: var(--success-color); text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Dev Time</div>
+                        <div style="font-size: 1.8rem; font-weight: bold; margin-top: 0.5rem; color: white;">4.1 Months</div>
+                        <div style="font-size: 0.95rem; color: #f8f9fa; margin-top: 0.4rem; line-height: 1.4;">Time to Develop<br>(D = 2.5 * 3.7^0.38)</div>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+                        <div style="font-size: 0.85rem; color: #d8b4fe; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Team Size</div>
+                        <div style="font-size: 1.8rem; font-weight: bold; margin-top: 0.5rem; color: white;">1 Developer</div>
+                        <div style="font-size: 0.95rem; color: #f8f9fa; margin-top: 0.4rem; line-height: 1.4;">Recommended<br>Staff Size (E/D)</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="static/script.js?v=2"></script>
+</body>
+</html>
